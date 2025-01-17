@@ -10,7 +10,7 @@ namespace TaskManagerApp
         static void Main()
         {
             ApplicationConfiguration.Initialize();
-            Application.Run(new LoginPage());
+            Application.Run(new MainPage());
             
         }
     }

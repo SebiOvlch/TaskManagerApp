@@ -13,7 +13,7 @@ namespace TaskManagerApp
 {
     public partial class EditToDo : Form
     {
-        public string EditedValue { get; private set; } // Tárolja a szerkesztett értéket
+        public string EditedValue { get; private set; }
         public EditToDo()
         {
             InitializeComponent();
@@ -21,10 +21,10 @@ namespace TaskManagerApp
 
         private void btnSave_Click(object sender, EventArgs e)
         {
-            // Mentjük a szerkesztett értéket
+            
             EditedValue = txtEdit.Text;
 
-            // Bezárjuk az űrlapot
+            
             DialogResult = DialogResult.OK;
             Close();
         }

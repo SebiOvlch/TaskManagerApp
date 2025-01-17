@@ -21,21 +21,20 @@ namespace TaskManagerApp
 
         public class UserChecklistData
         {
-            public string UserId { get; set; } // A felhasználó azonosítója
+            public string UserId { get; set; } 
             public List<ChecklistItem> Items { get; set; } = new List<ChecklistItem>();
         }
 
         public class ChecklistItem
         {
-            public string Text { get; set; } // Az elem szövege
-            public bool IsChecked { get; set; } // Az elem kiválasztott állapota
+            public string Text { get; set; }
+            public bool IsChecked { get; set; } 
         }
 
         private void SaveCheckedListBoxData(string userId, CheckedListBox checkedListBox, string filePath)
         {
             try
             {
-                // Ellenőrizzük, hogy létezik-e már az adatfájl
                 List<UserChecklistData> allData = new List<UserChecklistData>();
                 if (File.Exists(filePath))
                 {
@@ -43,7 +42,6 @@ namespace TaskManagerApp
                     allData = System.Text.Json.JsonSerializer.Deserialize<List<UserChecklistData>>(existingJson) ?? new List<UserChecklistData>();
                 }
 
-                // Gyűjtsük össze az aktuális felhasználó adatait
                 var userData = new UserChecklistData
                 {
                     UserId = userId,
@@ -55,18 +53,15 @@ namespace TaskManagerApp
                         }).ToList()
                 };
 
-                // Töröljük a régi adatokat az adott UserId-hoz
                 allData.RemoveAll(data => data.UserId == userId);
                 allData.Add(userData);
 
-                // Mentés JSON fájlba
                 string json = System.Text.Json.JsonSerializer.Serialize(allData, new System.Text.Json.JsonSerializerOptions
                 {
                     WriteIndented = true
                 });
 
                 File.WriteAllText(filePath, json);
-                //MessageBox.Show("Adatok sikeresen mentve!", "Mentés", MessageBoxButtons.OK, MessageBoxIcon.Information);
             }
             catch (Exception ex)
             {
@@ -78,18 +73,15 @@ namespace TaskManagerApp
         {
             try
             {
-                // Ellenőrizzük, hogy létezik-e a fájl
                 if (!File.Exists(filePath))
                 {
                     todoList = new List<TodoItem>();
                     return;
                 }
 
-                // JSON betöltése
                 string json = File.ReadAllText(filePath);
                 var allData = System.Text.Json.JsonSerializer.Deserialize<List<UserChecklistData>>(json) ?? new List<UserChecklistData>();
 
-                // Keresd meg az aktuális felhasználó adatait
                 var userData = allData.FirstOrDefault(data => data.UserId == userId);
                 if (userData != null)
                 {
@@ -117,7 +109,6 @@ namespace TaskManagerApp
                 allTasks = System.Text.Json.JsonSerializer.Deserialize<List<TaskItem>>(json) ?? new List<TaskItem>();
             }
 
-            // Csak az aktuális felhasználóhoz tartozó adatok cseréje
             allTasks.RemoveAll(task => task.UserId == userId);
             allTasks.AddRange(taskList);
 
@@ -134,8 +125,6 @@ namespace TaskManagerApp
             {
                 string json = File.ReadAllText(filePath);
                 var allTasks = System.Text.Json.JsonSerializer.Deserialize<List<TaskItem>>(json) ?? new List<TaskItem>();
-
-                // Szűrés az aktuális felhasználó adataira
 
                 taskList = allTasks.Where(task => task.UserId == userId).ToList();
             }
@@ -199,7 +188,6 @@ namespace TaskManagerApp
             TaskPanel.Visible = true;
 
 
-            // DataGridView beállítása
             dgvTasks.DataSource = taskList.Select(t => new
             {
                 t.Id,
@@ -230,7 +218,7 @@ namespace TaskManagerApp
 
         private void RefreshTaskList()
         {
-            dgvTasks.DataSource = null; // Frissítés
+            dgvTasks.DataSource = null; 
             dgvTasks.DataSource = taskList.Select(t => new
             {
                 t.Id,
@@ -250,10 +238,8 @@ namespace TaskManagerApp
                 return;
             }
 
-            // Kiválasztott feladat ID-jának lekérése
             int selectedTaskId = (int)dgvTasks.SelectedRows[0].Cells["Id"].Value;
 
-            // A taskList-ből megkeressük a megfelelő TaskItem objektumot
             TaskItem selectedTask = taskList.FirstOrDefault(t => t.Id == selectedTaskId);
 
             if (selectedTask == null)
@@ -262,13 +248,11 @@ namespace TaskManagerApp
                 return;
             }
 
-            // Az EditTaskForm megnyitása, és a kiválasztott TaskItem átadása
             EditTaskForm editForm = new EditTaskForm(selectedTask);
 
-            // Ha a szerkesztő űrlapon a mentést választotta a felhasználó
             if (editForm.ShowDialog() == DialogResult.OK)
             {
-                RefreshTaskList(); // Frissítjük a feladatok listáját
+                RefreshTaskList();
             }
         }
 
@@ -282,11 +266,10 @@ namespace TaskManagerApp
             try
             {
                 SaveCheckedListBoxData(userId, chkLstBoxToDo, filePath_Todo);
-                SaveTasksToFile(filePath); // Hívjuk meg a mentési metódust
+                SaveTasksToFile(filePath); 
             }
             catch (Exception ex)
             {
-                // Ha hiba történik a mentés során, jelezd az üzenetablakban
                 MessageBox.Show($"Something went wrong: {ex.Message}", "Hiba", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
             System.Environment.Exit(0);
@@ -300,27 +283,22 @@ namespace TaskManagerApp
                 return;
             }
 
-            // A kiválasztott sor indexe
             int selectedIndex = dgvTasks.SelectedRows[0].Index;
 
-            // Ellenőrizzük, hogy az index érvényes-e
             if (selectedIndex < 0 || selectedIndex >= taskList.Count)
             {
                 MessageBox.Show("Something went wrong!", "Error!", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 return;
             }
 
-            // Megerősítés kérés
             DialogResult result = MessageBox.Show("Are you sure you want to delete the selected task?", "Confirm", MessageBoxButtons.YesNo, MessageBoxIcon.Question);
             if (result == DialogResult.No)
             {
                 return;
             }
 
-            // Törlés a listából
             taskList.RemoveAt(selectedIndex);
 
-            // DataGridView frissítése
             RefreshTaskList();
         }
 
@@ -345,16 +323,12 @@ namespace TaskManagerApp
 
         private void btnAddTodo_Click(object sender, EventArgs e)
         {
-            // Ellenőrizzük, hogy a TextBox nem üres
             if (!string.IsNullOrWhiteSpace(txtTodo.Text))
             {
-                // A feladat hozzáadása a ListBox-hoz
                 chkLstBoxToDo.Items.Add(txtTodo.Text);
 
-                // A TextBox kiürítése
                 txtTodo.Text = "Add Task";
 
-                // A fókusz visszaállítása a TextBox-ra
                 txtTodo.Focus();
             }
             else
@@ -365,10 +339,8 @@ namespace TaskManagerApp
 
         private void btnDeleteTodo_Click(object sender, EventArgs e)
         {
-            // Ellenőrizzük, hogy van-e kiválasztott elem
             if (chkLstBoxToDo.SelectedItem != null)
             {
-                // Törlés a ListBox-ból
                 chkLstBoxToDo.Items.Remove(chkLstBoxToDo.SelectedItem);
             }
             else
@@ -409,12 +381,11 @@ namespace TaskManagerApp
 
             string selectedItem = chkLstBoxToDo.SelectedItem.ToString();
 
-            // Megnyitjuk a Form2-t szerkesztéshez
+           
             using (EditToDo editForm = new EditToDo())
             {
                 if (editForm.ShowDialog() == DialogResult.OK)
                 {
-                    // Frissítjük az elemet a szerkesztett értékre
                     int selectedIndex = chkLstBoxToDo.SelectedIndex;
                     chkLstBoxToDo.Items[selectedIndex] = editForm.EditedValue;
                 }

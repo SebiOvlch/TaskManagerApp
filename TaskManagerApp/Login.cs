@@ -145,13 +145,13 @@ namespace TaskManagerApp
         {
             if (txtLogPass.UseSystemPasswordChar)
             {
-                txtLogPass.UseSystemPasswordChar = false; // Látható jelszó
-                buttonTogglePassword.Text = "🔒"; // Ikon megváltoztatása
+                txtLogPass.UseSystemPasswordChar = false; 
+                buttonTogglePassword.Text = "🔒"; 
             }
             else
             {
-                txtLogPass.UseSystemPasswordChar = true; // Rejtett jelszó
-                buttonTogglePassword.Text = "👁"; // Ikon megváltoztatása
+                txtLogPass.UseSystemPasswordChar = true; 
+                buttonTogglePassword.Text = "👁"; 
             }
         }
     }
